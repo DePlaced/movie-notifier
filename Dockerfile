@@ -40,7 +40,7 @@ COPY . .
 RUN composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
 
 # Node/Vite build
-RUN npm ci && npm run build
+RUN npm install && npm run build
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
