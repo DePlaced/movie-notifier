@@ -19,6 +19,8 @@ return [
         'api_key' => env('TMDB_API_KEY', 'your_api_key_here'),
     ],
     'cron' => [
+        'username' => env('CRON_USERNAME'),
+        'password' => env('CRON_PASSWORD'),
         'secret' => env('CRON_SECRET'),
     ],
     'slack' => [

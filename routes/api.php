@@ -11,12 +11,12 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 /**
- * Movie Notification Route
+ * Movie Notification Route for slack
  */
-Route::post('cron/notify/{secret}', function ($secret, Request $request) {
+Route::post('slack/notify/{secret}', function ($secret, Request $request) {
     
     if ($secret !== config('services.cron.secret')) {
-        abort(403, 'Unauthorized');
+        abort(401, 'Unauthorized');
     }
 
     $slackSigningSecret = config('services.slack.notifications.signing_secret');
@@ -28,8 +28,28 @@ Route::post('cron/notify/{secret}', function ($secret, Request $request) {
     $my_signature = 'v0=' . hash_hmac('sha256', $sig_basestring, $slackSigningSecret);
 
     if (!hash_equals($my_signature, $slackSignature)) {
-        Log::warning('Slack signature mismatch');
-        abort(403, 'Invalid Slack signature');
+        abort(401, 'Unauthorized');
+    }
+
+    \Artisan::call('app:movie-command');
+
+    return response()->json([
+        "response_type" => "ephemeral",
+        "text" => "Movie notification triggered! :popcorn:"
+    ]);
+});
+    
+/**
+ * Movie Notification Route for cron
+ */
+Route::post('cron/notify/{secret}', function ($secret, Request $request) {
+    
+    if ($secret !== config('services.cron.secret')) {
+        abort(401, 'Unauthorized');
+    }
+
+    if ($request->getUser() !== config('services.cron.username') || $request->getPassword() !== config('services.cron.password')) {
+        abort(401, 'Unauthorized');
     }
 
     \Artisan::call('app:movie-command');
