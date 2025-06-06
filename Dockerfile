@@ -1,13 +1,3 @@
-FROM node:20-bullseye as nodebuild
-
-WORKDIR /app
-
-# Copy the entire application (to /app)
-COPY . .
-
-RUN npm ci
-RUN npm run build
-
 FROM php:8.2-fpm-alpine as base
 
 # System deps
@@ -46,11 +36,11 @@ RUN composer install --no-scripts --no-autoloader
 # Copy application files
 COPY . .
 
-# Copy prebuilt Node assets from the nodebuild stage
-COPY --from=nodebuild /app ./
-
 # Run composer scripts and optimize autoloader
 RUN composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
+
+# Node/Vite build
+RUN npm ci && npm run build
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
