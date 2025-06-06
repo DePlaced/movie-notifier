@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Client\IMovieClient;
 use App\Client\ITmdbClient;
 use Illuminate\Console\Command;
-use App\Client\MovieClient;
+use Carbon\Carbon;
 
 class MovieCommand extends Command
 {
@@ -48,11 +48,11 @@ class MovieCommand extends Command
             return "No movies were released today.";
         }
 
-        $message = "*New movies released today:*\n";
+        $message = "New Movies " . Carbon::now()->format('d-M-y') . " :popcorn:\n";
         foreach ($movies as $movie) {
             $movieTitle = $movie['title'] ?? "Unknown Title";
-            $releaseDate = $movie['release_date'] ?? '';
-            $message .= "• {$movieTitle}" . ($releaseDate ? " ({$releaseDate})" : "") . "\n";
+
+            $message .= "• {$movieTitle}" . "\n";
         }
         return $message;
     }

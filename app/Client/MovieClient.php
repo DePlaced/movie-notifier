@@ -6,9 +6,9 @@ use App\Client\IMovieClient;
 
 class MovieClient implements IMovieClient
 {
-    public function sendNewMovieNotification($movieTitle): bool | string
+    public function sendNewMovieNotification($message): bool | string
     {
-        $payload = json_encode(['text' => "New movie released: " . ($movieTitle ?? "Unknown Title") . " :popcorn:"]);
+        $payload = json_encode(['text' => $message]);
         $webhookUrl = config('logging.channels.slack.url');
         $ch = curl_init($webhookUrl);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

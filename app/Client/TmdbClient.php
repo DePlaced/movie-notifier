@@ -9,15 +9,16 @@ use Illuminate\Support\Facades\Http;
 class TmdbClient implements ITmdbClient
 {
     protected string $apiKey;
-    protected string $apiUrl = 'https://api.themoviedb.org/3';
+    protected string $apiUrl;
 
     public function __construct()
     {
+        $this->apiUrl = config('services.tmdb.base_url');
         $this->apiKey = config('services.tmdb.api_key');
     }
 
     public function getTodayReleasedMovies(): array
-    {   
+    {
         $fromDate = Carbon::now()->startOfDay()->toDateString();
 
         $response = Http::withoutVerifying()->get("{$this->apiUrl}/discover/movie", [ // SET SSL IN PRODUCTION

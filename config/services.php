@@ -15,6 +15,7 @@ return [
     */
 
     'tmdb' => [
+        'base_url' => env('TMDB_BASE_URL'),
         'api_key' => env('TMDB_API_KEY'),
     ],
 
