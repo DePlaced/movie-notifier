@@ -6,15 +6,10 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y curl git unzip php-cli php-zip php-mbstring
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copy composer files and install PHP dependencies
-COPY composer.json composer.lock ./
-RUN composer install --no-scripts --no-autoloader
+# Copy the entire application (to /app)
+COPY . .
 
-# Copy the rest of your code and build assets
-COPY package.json package-lock.json ./
-COPY resources resources
-COPY vite.config.js .
-COPY public public
+RUN composer install --no-scripts --no-autoloader
 
 RUN npm ci
 RUN npm run build
