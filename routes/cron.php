@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 Route::post(config('services.cron.webhook_url'), function ($secret, Request $request) {
+    
     if ($secret !== config('services.cron.secret')) {
         abort(403, 'Unauthorized');
     }
@@ -23,5 +24,22 @@ Route::post(config('services.cron.webhook_url'), function ($secret, Request $req
 
     \Artisan::call('app:movie-command');
 
-    return response('Movie notification triggered!', 200);
+    return response()->json([
+        "response_type" => "ephemeral",
+        "text" => "Movie notification triggered! :popcorn:"
+    ]);
+});
+
+Route::get(config('services.cron.webhook_url'), function ($secret, Request $request) {
+    
+    if ($secret !== config('services.cron.secret')) {
+        abort(403, 'Unauthorized');
+    }
+
+    \Artisan::call('app:movie-command');
+
+    return response()->json([
+        "response_type" => "ephemeral",
+        "text" => "Movie notification triggered! :popcorn:"
+    ]);
 });
