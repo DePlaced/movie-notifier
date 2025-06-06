@@ -44,11 +44,12 @@ WORKDIR /var/www/html
 # Copy composer files
 COPY composer.json composer.lock ./
 
+# Copy your Laravel app files
+COPY . .
+
 # Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Copy your Laravel app files
-COPY . .
 
 # Set permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html \
