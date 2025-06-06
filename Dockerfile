@@ -15,7 +15,9 @@ RUN apk add --no-cache \
     unzip \
     git \
     icu-dev \
-    oniguruma-dev
+    oniguruma-dev \
+    postgresql-dev
+
 
 # PHP extensions
 RUN docker-php-ext-configure gd \
