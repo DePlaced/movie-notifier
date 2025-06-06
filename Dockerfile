@@ -1,3 +1,10 @@
+FROM node:20-bullseye as nodebuild
+
+WORKDIR /app
+COPY . .
+RUN npm ci
+RUN npm run build
+
 FROM php:8.2-fpm-alpine as base
 
 # System deps
@@ -29,6 +36,9 @@ COPY --from=composer:2.8.9 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+# Copy prebuilt Node assets from the nodebuild stage
+COPY --from=nodebuild /app ./
+
 # Copy composer files and install PHP dependencies
 COPY composer.json composer.lock ./
 RUN composer install --no-scripts --no-autoloader
@@ -36,6 +46,7 @@ RUN composer install --no-scripts --no-autoloader
 # Copy rest of the app, including prebuilt assets
 COPY . .
 
+# Run composer scripts and optimize autoloader
 RUN composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
 
 # Set permissions
