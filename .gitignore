@@ -6,6 +6,9 @@
 /storage/*.key
 /storage/pail
 /vendor
+*.pem
+*.key
+*.crt
 .env
 .env.backup
 .env.production
