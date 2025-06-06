@@ -16,7 +16,9 @@ RUN apk add --no-cache \
     git \
     icu-dev \
     oniguruma-dev \
-    postgresql-dev
+    postgresql-dev \
+    nodejs \
+    npm
 
 
 # PHP extensions
