@@ -35,7 +35,6 @@ WORKDIR /var/www/html
 
 # Copy only composer files first (for cache)
 COPY composer.json composer.lock ./
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Copy node modules from the Node deps stage
 COPY --from=node_deps /app/node_modules ./node_modules
@@ -45,6 +44,7 @@ COPY package.json package-lock.json* yarn.lock* ./
 COPY . .
 
 # NOW build assets
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 RUN npm run build
 
 # Permissions
