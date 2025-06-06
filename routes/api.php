@@ -42,8 +42,8 @@ Route::post('slack/notify/{secret}', function ($secret, Request $request) {
 /**
  * Movie Notification Route for cron
  */
-Route::post('cron/notify/{secret}', function ($secret, Request $request) {
-    
+Route::post('cron/scheduler/{secret}', function ($secret, Request $request) {
+
     if ($secret !== config('services.cron.secret')) {
         abort(401, 'Unauthorized');
     }
@@ -52,10 +52,7 @@ Route::post('cron/notify/{secret}', function ($secret, Request $request) {
         abort(401, 'Unauthorized');
     }
 
-    \Artisan::call('app:movie-command');
+    \Artisan::call('schedule:run', ['--no-interaction' => true]);
 
-    return response()->json([
-        "response_type" => "ephemeral",
-        "text" => "Movie notification triggered! :popcorn:"
-    ]);
+    return response('Scheduler triggered!', 200);
 });

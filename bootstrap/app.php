@@ -18,6 +18,13 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
-        $schedule->command('app:movie-command')->daily();
+        $schedule->command('app:movie-command')->dailyAt('02:00')
+            ->timezone('Europe/Berlin')
+            ->onSuccess(function () {
+                \Log::info('Movie command executed successfully.');
+            })
+            ->onFailure(function () {
+                \Log::error('Movie command failed to execute.');
+            });
     })
     ->create();
