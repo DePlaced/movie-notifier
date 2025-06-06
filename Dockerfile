@@ -2,14 +2,8 @@ FROM node:20-bullseye as nodebuild
 
 WORKDIR /app
 
-# Install PHP and Composer
-RUN apt-get update && apt-get install -y curl git unzip php-cli php-zip php-mbstring
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
 # Copy the entire application (to /app)
 COPY . .
-
-RUN composer install --no-scripts --no-autoloader
 
 RUN npm ci
 RUN npm run build
