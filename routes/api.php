@@ -3,12 +3,16 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+/**
+ * User Route
+ */
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-
-
+/**
+ * Movie Notification Route
+ */
 Route::post('cron/notify/{secret}', function ($secret, Request $request) {
     
     if ($secret !== config('services.cron.secret')) {
@@ -26,20 +30,6 @@ Route::post('cron/notify/{secret}', function ($secret, Request $request) {
     if (!hash_equals($my_signature, $slackSignature)) {
         Log::warning('Slack signature mismatch');
         abort(403, 'Invalid Slack signature');
-    }
-
-    \Artisan::call('app:movie-command');
-
-    return response()->json([
-        "response_type" => "ephemeral",
-        "text" => "Movie notification triggered! :popcorn:"
-    ]);
-});
-
-Route::get('cron/notify/{secret}', function ($secret, Request $request) {
-    
-    if ($secret !== config('services.cron.secret')) {
-        abort(403, 'Unauthorized');
     }
 
     \Artisan::call('app:movie-command');

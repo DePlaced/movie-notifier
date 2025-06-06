@@ -54,6 +54,9 @@ class MovieCommand extends Command
 
             $message .= "• {$movieTitle}" . "\n";
         }
+
+        $message .= "\nGet more details at: https://movie-notifier-service.onrender.com/";
+
         return $message;
     }
 }
