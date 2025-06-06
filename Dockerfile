@@ -1,26 +1,25 @@
-FROM node:20-alpine AS nodebase
-WORKDIR /app
-COPY package.json package-lock.json* yarn.lock* ./
-RUN npm install
-COPY . .
-RUN npm run build   
+FROM php:8.2-fpm-alpine
 
-# --- Composer Dependencies Stage (optional, for better cache) ---
-FROM composer:2.8.9 AS composerbase
-WORKDIR /app
-COPY composer.json composer.lock ./
-RUN composer install --no-scripts --no-autoloader --no-dev
-
-# --- PHP (main) stage ---
-FROM php:8.2-fpm-alpine AS phpbase
-
-# Install system packages and PHP extensions
+# System deps
 RUN apk add --no-cache \
-    nginx bash curl supervisor libpng libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev \
-    zip unzip git icu-dev oniguruma-dev
+    nginx \
+    bash \
+    curl \
+    supervisor \
+    libpng \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    libwebp-dev \
+    freetype-dev \
+    zip \
+    unzip \
+    git \
+    icu-dev \
+    oniguruma-dev
 
 # PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+RUN docker-php-ext-configure gd \
+    --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install pdo pdo_mysql gd intl mbstring opcache
 
 # Composer
@@ -28,19 +27,14 @@ COPY --from=composer:2.8.9 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-
-# Copy node modules from the Node deps stage
+# Copy composer files and install PHP dependencies
 COPY composer.json composer.lock ./
-COPY --from=composerbase /app/vendor ./vendor
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+
+# Copy rest of the app, including prebuilt assets
 COPY . .
 
-# NOW build assets
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
-
-# -- COPY BUILT FRONTEND ASSETS --
-COPY --from=nodebase /app/public/build ./public/build
-
-# Permissions
+# Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
 
