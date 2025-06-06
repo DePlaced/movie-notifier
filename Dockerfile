@@ -1,31 +1,26 @@
-FROM node:20-alpine AS node_deps
+FROM node:20-alpine AS nodebase
 WORKDIR /app
 COPY package.json package-lock.json* yarn.lock* ./
 RUN npm install
+COPY . .
+RUN npm run build   
+
+# --- Composer Dependencies Stage (optional, for better cache) ---
+FROM composer:2.8.9 AS composerbase
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-scripts --no-autoloader --no-dev
 
 # --- PHP (main) stage ---
-FROM php:8.2-fpm-alpine
+FROM php:8.2-fpm-alpine AS phpbase
 
-# System deps
+# Install system packages and PHP extensions
 RUN apk add --no-cache \
-    nginx \
-    bash \
-    curl \
-    supervisor \
-    libpng \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    libwebp-dev \
-    freetype-dev \
-    zip \
-    unzip \
-    git \
-    icu-dev \
-    oniguruma-dev
+    nginx bash curl supervisor libpng libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev \
+    zip unzip git icu-dev oniguruma-dev
 
 # PHP extensions
-RUN docker-php-ext-configure gd \
-    --with-freetype --with-jpeg --with-webp \
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install pdo pdo_mysql gd intl mbstring opcache
 
 # Composer
@@ -33,20 +28,17 @@ COPY --from=composer:2.8.9 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy only composer files first (for cache)
-COPY composer.json composer.lock ./
-RUN composer install --no-interaction --prefer-dist --no-scripts
 
 # Copy node modules from the Node deps stage
-COPY --from=node_deps /app/node_modules ./node_modules
-COPY package.json package-lock.json* yarn.lock* ./
-
-# Now copy the rest of your app (after vendor exists!)
+COPY composer.json composer.lock ./
+COPY --from=composerbase /app/vendor ./vendor
 COPY . .
 
 # NOW build assets
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
-RUN npm run build
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+
+# -- COPY BUILT FRONTEND ASSETS --
+COPY --from=nodebase /app/public/build ./public/build
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html \
