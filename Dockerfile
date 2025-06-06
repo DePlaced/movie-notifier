@@ -1,12 +1,22 @@
 FROM node:20-bullseye as nodebuild
 
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
 
+# Install PHP and Composer
+RUN apt-get update && apt-get install -y curl git unzip php-cli php-zip php-mbstring
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Copy composer files and install PHP dependencies
+COPY composer.json composer.lock ./
+RUN composer install --no-interaction --prefer-dist --no-dev
+
+# Copy the rest of your code and build assets
+COPY package.json package-lock.json ./
 COPY resources resources
 COPY vite.config.js .
 COPY public public
+
+RUN npm ci
 RUN npm run build
 
 FROM php:8.2-fpm-alpine as base
