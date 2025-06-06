@@ -15,8 +15,8 @@ return [
     */
 
     'tmdb' => [
-        'base_url' => env('TMDB_BASE_URL'),
-        'api_key' => env('TMDB_API_KEY'),
+        'base_url' => env('TMDB_BASE_URL', 'https://api.themoviedb.org/3'),
+        'api_key' => env('TMDB_API_KEY', 'your_api_key_here'),
     ],
 
     'postmark' => [

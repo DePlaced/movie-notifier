@@ -21,7 +21,9 @@ class TmdbClient implements ITmdbClient
     {
         $fromDate = Carbon::now()->startOfDay()->toDateString();
 
-        $response = Http::withoutVerifying()->get("{$this->apiUrl}/discover/movie", [ // SET SSL IN PRODUCTION
+        $response = Http::withOptions([
+            'verify' => true, // Ensure SSL verification is enabled
+        ])->get("{$this->apiUrl}/discover/movie", [
             'api_key' => $this->apiKey,
             'language' => 'en-US',
             'sort_by' => 'popularity.desc',
