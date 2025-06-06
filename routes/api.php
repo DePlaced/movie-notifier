@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
-Route::post(config('services.cron.webhook_url'), function ($secret, Request $request) {
+Route::post('cron/notify/{secret}', function ($secret, Request $request) {
     
     if ($secret !== config('services.cron.secret')) {
         abort(403, 'Unauthorized');
@@ -30,7 +30,7 @@ Route::post(config('services.cron.webhook_url'), function ($secret, Request $req
     ]);
 });
 
-Route::get(config('services.cron.webhook_url'), function ($secret, Request $request) {
+Route::get('cron/notify/{secret}', function ($secret, Request $request) {
     
     if ($secret !== config('services.cron.secret')) {
         abort(403, 'Unauthorized');

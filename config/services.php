@@ -20,7 +20,6 @@ return [
     ],
     'cron' => [
         'secret' => env('CRON_SECRET'),
-        'webhook_url' => env('CRON_WEBHOOK_URL'),
     ],
     'slack' => [
         'notifications' => [
