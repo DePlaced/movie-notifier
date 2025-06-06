@@ -17,6 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
-        $schedule->command('app:movie-command')->dailyAt('22:00');
+        $schedule->command('app:movie-command')->dailyAt('14:00');
     })
     ->create();

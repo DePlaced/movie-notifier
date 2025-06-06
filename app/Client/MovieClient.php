@@ -9,7 +9,7 @@ class MovieClient implements IMovieClient
     public function sendNewMovieNotification($message): bool | string
     {
         $payload = json_encode(['text' => $message]);
-        $webhookUrl = config('logging.channels.slack.url');
+        $webhookUrl = config('services.slack.notifications.url');
         $ch = curl_init($webhookUrl);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");

@@ -18,25 +18,14 @@ return [
         'base_url' => env('TMDB_BASE_URL', 'https://api.themoviedb.org/3'),
         'api_key' => env('TMDB_API_KEY', 'your_api_key_here'),
     ],
-
-    'postmark' => [
-        'token' => env('POSTMARK_TOKEN'),
+    'cron' => [
+        'secret' => env('CRON_SECRET'),
+        'webhook_url' => env('CRON_WEBHOOK_URL'),
     ],
-
-    'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
-        'secret' => env('AWS_SECRET_ACCESS_KEY'),
-        'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
-    ],
-
-    'resend' => [
-        'key' => env('RESEND_KEY'),
-    ],
-
     'slack' => [
         'notifications' => [
-            'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
-            'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
+            'url' => env('SLACK_WEBHOOK_URL'),
+            'signing_secret' => env('SLACK_SIGNING_SECRET'),
         ],
     ],
 
