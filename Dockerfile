@@ -29,12 +29,12 @@ WORKDIR /var/www/html
 
 # Copy composer files and install PHP dependencies
 COPY composer.json composer.lock ./
-RUN composer install --no-scripts --no-autoloader --no-dev
+RUN composer install --no-scripts --no-autoloader
 
 # Copy rest of the app, including prebuilt assets
 COPY . .
 
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+RUN composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
