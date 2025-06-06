@@ -20,7 +20,7 @@ RUN apk add --no-cache \
 # PHP extensions
 RUN docker-php-ext-configure gd \
     --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install pdo pdo_mysql gd intl mbstring opcache
+    && docker-php-ext-install pdo_pgsql gd intl mbstring opcache
 
 # Composer
 COPY --from=composer:2.8.9 /usr/bin/composer /usr/bin/composer
