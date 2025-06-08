@@ -55,8 +55,8 @@ class MovieCommand extends Command
             $title        = $movie['title'] ?? 'Untitled';
             $releaseDate  = $movie['release_date'] ?? 'Unknown';
             $link         = "https://www.themoviedb.org/movie/{$movie['id']}";
-            return "•{$title} <{$link}|Details>";
-        })->implode("\n\n");
+            return "•{$title}: <{$link}|Details>";
+        })->implode("\n");
 
         $message .= "\nGet more details at: https://movie-notifier-service.onrender.com/";
 
