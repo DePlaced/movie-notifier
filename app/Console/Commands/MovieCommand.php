@@ -6,6 +6,7 @@ use App\Client\IMovieClient;
 use App\Client\ITmdbClient;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class MovieCommand extends Command
 {
@@ -36,7 +37,7 @@ class MovieCommand extends Command
     {
         $todayReleasedMovies = $this->tmdbClient->getTodayReleasedMovies();
         $message = $this->buildSlackMovieListMessage($todayReleasedMovies);
-        
+
         $this->info("Sending to Slack:\n" . $message);
         $response = $this->movieClient->sendNewMovieNotification($message);
         $this->info("Response: " . $response);
@@ -49,11 +50,13 @@ class MovieCommand extends Command
         }
 
         $message = "New Movies " . Carbon::now()->format('d-M-y') . " :popcorn:\n";
-        foreach ($movies as $movie) {
-            $movieTitle = $movie['title'] ?? "Unknown Title";
 
-            $message .= "• {$movieTitle}" . "\n";
-        }
+        $message .= collect($movies)->take(10)->map(function ($movie) {
+            $title        = $movie['title'] ?? 'Untitled';
+            $releaseDate  = $movie['release_date'] ?? 'Unknown';
+            $link         = "https://www.themoviedb.org/movie/{$movie['id']}";
+            return "•{$title} <{$link}|Details>";
+        })->implode("\n\n");
 
         $message .= "\nGet more details at: https://movie-notifier-service.onrender.com/";
 
