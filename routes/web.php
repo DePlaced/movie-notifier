@@ -2,14 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use App\Http\Controllers\Forms\TimeFormsController;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::post('/time/store', [TimeFormsController::class, 'store'])->name('time.store');
+
+Route::get('dashboard', function () {
+    return view('dashboard', [
+        'idList' => [1,2,3]
+       ]);
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
