@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,5 +27,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->scoped(\App\Client\IMovieClient::class,\App\Client\MovieClient::class);
         $this->app->scoped(\App\Client\ITmdbClient::class,\App\Client\TmdbClient::class);
+
+        Blade::component('components.datepicker', 'datepicker');
     }
 }
