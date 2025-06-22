@@ -3,7 +3,7 @@
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
             <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
                 @foreach($idList as $id)
-                    <x-forms.time.create :id="$id" />
+                    <x-forms.time.edit :id="$id" />
                 @endforeach
             </div>
             <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">

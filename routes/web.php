@@ -9,6 +9,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::post('/time/store', [TimeFormsController::class, 'store'])->name('time.store');
+Route::get('/time/create', [TimeFormsController::class, 'timeInputModal'])->name('time.create');
 
 Route::get('dashboard', function () {
     return view('dashboard', [

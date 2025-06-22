@@ -15,4 +15,9 @@ class TimeFormsController extends Controller
         // Validate and save the data
         return redirect()->route('dashboard')->with('success', 'Time entry created successfully.');
     }
+
+        public function timeInputModal()
+    {
+        return view('components.forms.time.create')->render();
+    }
 }
