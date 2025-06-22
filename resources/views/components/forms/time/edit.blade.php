@@ -91,7 +91,7 @@
                 const calendar = instance.calendarContainer;
                 const timeContainer = calendar.querySelector(".flatpickr-time");
 
-                if (timeContainer && !calendar.querySelector(".flatpickr-today-inline")) {
+                if (timeContainer) {
                   const clearButton = document.createElement("button");
                   clearButton.type = "button";
                   clearButton.textContent = "Clear";
