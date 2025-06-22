@@ -82,4 +82,4 @@
     document.addEventListener('DOMContentLoaded', initializeFlatpickr);
 </script>
 
-<x-datetime-picker name="start_at" :value="now()" :submit-on-close="true" />
+<x-datetime-picker name="start_at" :value="{{ old('start_at') }}" :submit-on-close="true" />
