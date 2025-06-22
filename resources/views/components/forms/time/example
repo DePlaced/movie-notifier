@@ -1,0 +1,85 @@
+@props([
+    'name',
+    'id' => $name,
+    'value' => '',
+    'placeholder' => 'Select date',
+    'submitOnClose' => false,
+])
+
+<input
+    type="text"
+    name="{{ $name }}"
+    id="{{ $id }}"
+    class="dateTimePicker w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm text-sm placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+    placeholder="{{ $placeholder }}"
+    value="{{ $value }}"
+    data-submit-on-close="{{ $submitOnClose ? 'true' : 'false' }}"
+/>
+
+<!-- Flatpickr & SweetAlert2 CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function initializeFlatpickr() {
+        document.querySelectorAll('.dateTimePicker').forEach(input => {
+            if (input._flatpickr) input._flatpickr.destroy();
+
+            const shouldSubmitOnClose = input.dataset.submitOnClose === "true";
+            let originalValue = input.value;
+
+            const config = {
+                enableTime: true,
+                dateFormat: "Y/m/d H:i",
+                altInput: true,
+                altFormat: "d/m/Y H:i",
+                time_24hr: true,
+                onReady: function (selectedDates, dateStr, instance) {
+                    const calendar = instance.calendarContainer;
+                    const timeContainer = calendar.querySelector(".flatpickr-time");
+
+                    if (timeContainer && !calendar.querySelector(".flatpickr-today-inline")) {
+                        const clearBtn = document.createElement("button");
+                        clearBtn.type = "button";
+                        clearBtn.textContent = "Clear";
+                        clearBtn.className = "text-sm text-red-600 bg-red-100 rounded px-3 h-8 hover:bg-red-200 transition";
+                        clearBtn.onclick = () => instance.clear();
+
+                        const todayBtn = document.createElement("button");
+                        todayBtn.type = "button";
+                        todayBtn.textContent = "Today";
+                        todayBtn.className = "text-sm text-white bg-blue-500 rounded px-3 h-8 hover:bg-blue-600 transition";
+                        todayBtn.onclick = () => instance.setDate(new Date(), true);
+
+                        timeContainer.style.display = "flex";
+                        timeContainer.style.justifyContent = "center";
+                        timeContainer.style.alignItems = "center";
+                        timeContainer.style.gap = "0.5rem";
+
+                        timeContainer.appendChild(clearBtn);
+                        timeContainer.appendChild(todayBtn);
+                    }
+                }
+            };
+
+            if (shouldSubmitOnClose) {
+                config.onOpen = function () {
+                    originalValue = input.value;
+                };
+                config.onClose = function (selectedDates, dateStr, instance) {
+                    if (input.value !== originalValue) {
+                        const form = input.closest('form');
+                        if (form) form.submit();
+                    }
+                };
+            }
+
+            flatpickr(input, config);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initializeFlatpickr);
+</script>
+
+<x-datetime-picker name="start_at" :value="now()" :submit-on-close="true" />
