@@ -14,9 +14,10 @@
             <input
             type="text"
             name="date_at"
-            class="timePicker w-64 rounded-md border border-gray-300 px-3 py-2 shadow-sm text-sm placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            class="dateTimePicker w-64 rounded-md border border-gray-300 px-3 py-2 shadow-sm text-sm placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             placeholder="Select date"
             value="{{ Carbon\Carbon::now()->format('Y-m-d H:i') }}"
+            data-submit-on-close="true"
             />
 
         </form>
@@ -51,7 +52,7 @@
                     initializeFlatpickr();
                   },
                   preConfirm: () => {
-                    const time = document.querySelector('.timePicker').value;
+                    const time = document.querySelector('.dateTimePicker').value;
                     if (!time) {
                       Swal.showValidationMessage('Please select a time');
                     }
@@ -68,57 +69,70 @@
               });
           }
 
-          function initializeFlatpickr() {
-              flatpickr(".timePicker", {
-                enableTime: true,                // Enables time selection
-                dateFormat: "Y/m/d H:i",         // Submitted value format (e.g. 2025/06/22 14:30
-                altInput: true,                  // Shows a prettier version to the user
-                altFormat: "d/m/Y H:i",          // User-friendly format (e.g. 22/06/2025 14:30)
-                time_24hr: true,                  // 24-hour time instead of AM/PM
-                onReady: function (selectedDates, dateStr, instance) {
-                  const calendar = instance.calendarContainer;
-                  const timeContainer = calendar.querySelector(".flatpickr-time");
+         function initializeFlatpickr() {
+          document.querySelectorAll(".dateTimePicker").forEach((input) => {
+            // Ensure the input is not already initialized
+            if (input._flatpickr) {
+              input._flatpickr.destroy();
+            }
 
-                  if (timeContainer && !calendar.querySelector(".flatpickr-today-inline")) {
 
-                    // Clear button
-                    const clearButton = document.createElement("button");
-                    clearButton.type = "button";
-                    clearButton.textContent = "Clear";
-                    clearButton.onclick = () => {
-                      instance.clear();
-                    };
+            const submitOnClose = input.dataset.submitOnClose === "true";
+            let originalValue = input.value;
 
-                    // Today button
-                    const todayButton = document.createElement("button");
-                    todayButton.type = "button";
-                    todayButton.textContent = "Today";
-                    todayButton.onclick = () => {
-                      instance.setDate(new Date(), true);
-                    };
+            const config = {
+              enableTime: true,
+              dateFormat: "Y/m/d H:i",
+              altInput: true,
+              altFormat: "d/m/Y H:i",
+              time_24hr: true,
 
-                    // Clear button style (with Tailwind colors)
-                    clearButton.className =
-                      "text-sm text-red-600 bg-red-100 rounded px-3 h-8 hover:bg-red-200 transition";  // h-8 adjusts height, px and py adjust spacing
+              onReady: function (selectedDates, dateStr, instance) {
+                const calendar = instance.calendarContainer;
+                const timeContainer = calendar.querySelector(".flatpickr-time");
 
-                    // Today button style (with Tailwind colors)
-                    todayButton.className =
-                      "text-sm text-white bg-blue-500 rounded px-3 h-8 hover:bg-blue-600 transition";  // h-8 adjusts height, px and py adjust spacing
+                if (timeContainer && !calendar.querySelector(".flatpickr-today-inline")) {
+                  const clearButton = document.createElement("button");
+                  clearButton.type = "button";
+                  clearButton.textContent = "Clear";
+                  clearButton.onclick = () => instance.clear();
 
-                    // Apply flexbox styling to the time container to center the buttons vertically
-                    timeContainer.style.display = "flex"; // Enable flexbox
-                    timeContainer.style.justifyContent = "center"; // Center buttons horizontally
-                    timeContainer.style.alignItems = "center"; // Center buttons vertically
-                    timeContainer.style.gap = "0.5rem"; // Add some space between buttons
+                  const todayButton = document.createElement("button");
+                  todayButton.type = "button";
+                  todayButton.textContent = "Today";
+                  todayButton.onclick = () => instance.setDate(new Date(), true);
 
-                    
-                    timeContainer.appendChild(clearButton);
-                    timeContainer.appendChild(todayButton);
+                  clearButton.className =
+                    "text-sm text-red-600 bg-red-100 rounded px-3 h-8 hover:bg-red-200 transition";
+                  todayButton.className =
+                    "text-sm text-white bg-blue-500 rounded px-3 h-8 hover:bg-blue-600 transition";
 
-                  }
+                  timeContainer.style.display = "flex";
+                  timeContainer.style.justifyContent = "center";
+                  timeContainer.style.alignItems = "center";
+                  timeContainer.style.gap = "0.5rem";
+
+                  timeContainer.appendChild(clearButton);
+                  timeContainer.appendChild(todayButton);
                 }
-              });
-          }
+              }
+            };
+
+            if (submitOnClose) {
+              config.onOpen = function (selectedDates, dateStr, instance) {
+                originalValue = instance.input.value;
+              };
+              config.onClose = function (selectedDates, dateStr, instance) {
+                if (instance.input.value !== originalValue) {
+                  const form = instance.input.closest("form");
+                  if (form) form.submit();
+                }
+              };
+            }
+
+            flatpickr(input, config);
+          });
+        }
         </script>
     </body>
 </html>
